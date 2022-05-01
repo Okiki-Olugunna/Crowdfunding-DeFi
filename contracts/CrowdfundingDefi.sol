@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0; // consider deploying to polygon network for cheaper fees
+// considering deploying to polygon network 
+pragma solidity ^0.8.0; 
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
@@ -8,7 +9,6 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@aave/aave-v3-core/contracts/interfaces/IPool.sol"; // aave pool interface 
 
 contract CrowdfundingDefi is Ownable {
-
 
     // variable for the owner(s) if it's not just an individual doing the funding
     // this address could link to their multisig wallet if they want to 
@@ -21,13 +21,13 @@ contract CrowdfundingDefi is Ownable {
     // 10usd minimum amount
     uint256 minimumAmount = 10 * 10**18;
 
-    //
+    // variable for the funding target 
     uint256 fundingTarget;
 
-    //
+    // 
     uint fundingRoundDeadline;
 
-    //
+    //variable to keep track of the total funding that has been raised 
     uint256 public fundingRaised;
 
     // eth price feed from chainlink 
@@ -44,7 +44,7 @@ contract CrowdfundingDefi is Ownable {
 
     FUNDING_STATE public fundingState;
 
-    // funding start must be closed before starting a new round
+    // funding state must be closed before starting a new round
     modifier startFunding() {
         require(fundingState == FUNDING_STATE.CLOSED);
         _;
@@ -64,7 +64,7 @@ contract CrowdfundingDefi is Ownable {
 
     constructor(address _priceFeedAddress, uint256 _fundingTarget, address _owners) public {
         //owner = msg.sender;
-        owner = owners;
+        owner = _owners;
         ethUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         fundingState = FUNDING_STATE.CLOSED;
         fundingTarget = _fundingTarget;
