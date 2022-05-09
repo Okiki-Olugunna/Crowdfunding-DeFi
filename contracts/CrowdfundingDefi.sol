@@ -17,6 +17,9 @@ contract CrowdfundingDefi is Ownable {
     // keeping track of people who donated - can give them a gift/airdop later
     mapping(address => uint256) peopleWhoFunded;
     address payable[] public generousPeople; //this array is for the airdrop/gift
+    
+    //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
+    mapping(address => bool) thisPersonFunded;
 
     // 10usd minimum amount
     uint256 minimumAmount = 10 * 10**18;
@@ -122,6 +125,8 @@ contract CrowdfundingDefi is Ownable {
         if (msg.value >= 10 ether) {
             emit specialFunder(msg.sender);
         }
+        
+        thisPersonFunded[msg.sender] = true;
     }
 
     // withdraw function - for owner of fundraiser (& approved owners if done in a group - multisig wallet maybe?)
@@ -189,7 +194,10 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // function for donors to redeem their gift/rewards
-    function claimRewards() external {}
+    function claimRewards() external {
+        require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
+        payable(msg.sender).transfer(peopleWhoFunded[msg.sender]);
+}
 
 
     // converting the amount of ETH to USD
