@@ -107,7 +107,7 @@ contract CrowdfundingDefi is Ownable {
         return fundingRaised;
     }
 
-    // fund function - for anyone (external) - put in an amount - minimum: $10
+    // fund function - for anyone - amount - minimum: $10
     function fund(uint256 _amount) external payable {
         require(
             _amount >= 0.0005 ether, // change this later to use convert function 
