@@ -3,20 +3,26 @@
 // considering deploying to polygon network 
 pragma solidity ^0.8.0; 
 
+//  ERC20 Interface
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// Ownable contract 
 import "@openzeppelin/contracts/access/Ownable.sol";
+// Chainlink V3 Interface for data feed 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+// aave pool contract 
 //import "@aave/aave-v3-core/contracts/protocol/pool/Pool.sol";
-import "@aave/aave-v3-core/contracts/interfaces/IPool.sol"; // aave pool interface 
+// aave pool interface 
+import "@aave/aave-v3-core/contracts/interfaces/IPool.sol"; 
 
 contract CrowdfundingDefi is Ownable {
 
-    // variable for the owner(s) if it's not just an individual doing the funding
+    // address of the owner
     // this address could link to their multisig wallet if they want to 
     address payable public owner;
 
     // keeping track of people who donated - can give them a gift/airdop later
-    mapping(address => uint256) peopleWhoFunded;
-    address payable[] public generousPeople; //this array is for the airdrop/gift
+    mapping(address => uint256) peopleWhoFunded; 
+    address payable[] public generousPeople; //this array is for the airdrop/gift, so can use a for loop 
     
     //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
     mapping(address => bool) thisPersonFunded;
@@ -27,7 +33,7 @@ contract CrowdfundingDefi is Ownable {
     // variable for the funding target 
     uint256 fundingTarget;
 
-    // 
+    // variable for the funding deadline 
     uint fundingRoundDeadline;
 
     //variable to keep track of the total funding that has been raised 
