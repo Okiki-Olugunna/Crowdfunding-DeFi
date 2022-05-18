@@ -140,7 +140,7 @@ contract CrowdfundingDefi is Ownable {
         msg.sender.transfer(_amount);
     }
 
-    // integrate with a defi protocol on the polygon/eth network
+    // integrate with aave on the polygon network
     function yieldFarm(address _aaveTokenAddress) internal {
         // deposit extra funds in aave
         // convert the eth to a stablecoin 
