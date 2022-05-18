@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 
-// considering deploying to polygon network 
+// deploy to polygon network 
 pragma solidity ^0.8.0; 
 
 //  ERC20 Interface
