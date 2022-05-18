@@ -142,12 +142,11 @@ contract CrowdfundingDefi is Ownable {
 
     // integrate with a defi protocol on the polygon/eth network
     function yieldFarm(address _aaveTokenAddress) internal {
-        // deposit extra funds in a lending protocol - compound, aave, curve, instadapp, yearnfinance
-        // when deciding; look into yield & fees;
-        // could even convert the eth to a stablecoin to make sure donors get an assurance of a min. amount back
-        // time period? - maybe 30-180days..?
+        // deposit extra funds in aave
+        // convert the eth to a stablecoin 
+        // time period? - 30-180days..?
 
-        // swap eth for usdt 
+        // swap eth for usdt / usdc / dai
         // bridge the usdt to polygon network 
 
         //instantiating aave interface 
