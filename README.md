@@ -7,6 +7,4 @@
 
 ##### Currently working on:
 - DeFi integration with Aave 
-
-##### Things considering to add: 
-- a countdown feature that automatically ends a funding round, without having to manually call the closeFundingRound function 
+- a countdown feature that automatically ends a funding round, without having to manually call the closeFundingRound function (currently using block.timestamp)
