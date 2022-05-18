@@ -22,7 +22,7 @@ contract CrowdfundingDefi is Ownable {
 
     // keeping track of people who donated - can give them a gift/airdop later
     mapping(address => uint256) peopleWhoFunded; 
-    address payable[] public generousPeople; //this array is for the airdrop/gift, so can use a for loop 
+    address payable[] public generousPeople; //this array is for the airdrop/gift 
     
     //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
     mapping(address => bool) thisPersonFunded;
@@ -34,7 +34,7 @@ contract CrowdfundingDefi is Ownable {
     uint256 fundingTarget;
 
     // variable for the funding deadline 
-    uint fundingRoundDeadline;
+    uint public fundingRoundDeadline;
 
     //variable to keep track of the total funding that has been raised 
     uint256 public fundingRaised;
@@ -80,21 +80,21 @@ contract CrowdfundingDefi is Ownable {
     }
 
     function openSeriesAFunding(uint256 _targetA, uint _fundingRoundDeadline) onlyOwner startFunding {
-        fundingRoundDeadline = _fundingRoundDeadline days;
+        fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_A;
 
         emit fundingRoundStarted();
     }
 
     function openSeriesBFunding(uint256 _targetB, uint _fundingRoundDeadline) onlyOwner startFunding {
-        fundingRoundDeadline = _fundingRoundDeadline days;
+        fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_B;
 
         emit fundingRoundStarted();
     }
 
     function openSeriesCFunding(uint256 _targetC, uint _fundingRoundDeadline) onlyOwner startFunding {
-        fundingRoundDeadline = _fundingRoundDeadline days;
+        fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_C;
 
 
@@ -118,6 +118,7 @@ contract CrowdfundingDefi is Ownable {
 
     // fund function - for anyone - amount - minimum: $10
     function fund(uint256 _amount) external payable {
+        require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
             _amount >= 0.0005 ether, // change this later to use convert function 
             "Minimum funding is $10. Please increase your donation"
