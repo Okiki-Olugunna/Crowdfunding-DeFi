@@ -194,16 +194,17 @@ contract CrowdfundingDefi is Ownable {
 */
     
 
+/*
     // function to reward donors - or they can claim instead to save gas
     function rewardDonators() internal payable {
-        // look into how defi protocols reward users for inspiration
     }
+*/
 
-    // function for donors to redeem their gift/rewards
+    // function for donors to redeem their gift/rewards - saves gas
     function claimRewards() external {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
         payable(msg.sender).transfer(peopleWhoFunded[msg.sender]);
-}
+    }
 
 
     // converting the amount of ETH to USD
