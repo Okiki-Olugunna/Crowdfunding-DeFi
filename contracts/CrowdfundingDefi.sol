@@ -203,7 +203,8 @@ contract CrowdfundingDefi is Ownable {
     // function for donors to redeem their gift/rewards - saves gas
     function claimRewards() external {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
-        payable(msg.sender).transfer(peopleWhoFunded[msg.sender]);
+        
+        /*payable(msg.sender).transfer(peopleWhoFunded[msg.sender]); */
     }
 
 
