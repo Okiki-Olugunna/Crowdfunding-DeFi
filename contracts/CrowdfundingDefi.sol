@@ -16,13 +16,13 @@ import "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 contract CrowdfundingDefi is Ownable {
 
-    // address of the owner
-    // this address could link to their multisig wallet if they want to 
+    // address of the owner of the crowdfund 
     address payable public owner;
 
-    // keeping track of people who donated - can give them a gift/airdop later
+    // keeping track of people who donated so can give them a gift/airdop later
     mapping(address => uint256) peopleWhoFunded; 
-    address payable[] public generousPeople; //this array is for the airdrop/gift 
+    // generous people - those who donate >= 10 ETH 
+    address payable[] public generousPeople;  
     
     //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
     mapping(address => bool) thisPersonFunded;
@@ -59,7 +59,7 @@ contract CrowdfundingDefi is Ownable {
         _;
     }
 
-    // if funding exceeds target, could put extra funds in a defi farm to reward donators later
+    // if funding exceeds target, put extra funds in a lending protocol (Aave) to reward donators later
     modifier yielding() {
         require(fundingState == FUNDING_STATE.CLOSED);
         _;
@@ -97,11 +97,10 @@ contract CrowdfundingDefi is Ownable {
         fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_C;
 
-
         emit fundingRoundStarted();
     }
 
-    // end of funding round - put extra funds in defi farm
+    // end of funding round - put extra funds in Aave 
     function closeFundingRound() onlyOwner returns (uint256) {
         require(fundingState != FUNDING_STATE.CLOSED, "Funding round is already closed.");
 
@@ -127,16 +126,16 @@ contract CrowdfundingDefi is Ownable {
 
         fundingRaised += msg.value;
         peopleWhoFunded[msg.sender] += msg.value;
-        generousPeople.push(msg.sender);
 
         if (msg.value >= 10 ether) {
+            generousPeople.push(msg.sender);
             emit specialFunder(msg.sender);
         }
         
         thisPersonFunded[msg.sender] = true;
     }
 
-    // withdraw function - for owner of fundraiser (& approved owners if done in a group - multisig wallet maybe?)
+    // withdraw function - for owner of fundraiser
     function withdraw(uint256 _amount) onlyOwner {
         msg.sender.transfer(_amount);
     }
