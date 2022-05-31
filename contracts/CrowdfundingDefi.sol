@@ -20,6 +20,8 @@ contract CrowdfundingDefi is Ownable {
     Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
     // Aave V3 Polygon testnest (mumbai) address
     // 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F
+    // DAI stablecoin address
+    // 0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063
 
     // address of the owner of the crowdfund 
     address payable public owner;
