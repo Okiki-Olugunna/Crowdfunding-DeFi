@@ -9,12 +9,17 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 // Chainlink V3 Interface for data feed 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-// aave pool contract 
-//import "@aave/aave-v3-core/contracts/protocol/pool/Pool.sol";
+//aave V3 pool contract 
+import "@aave/aave-v3-core/contracts/protocol/pool/Pool.sol";
 // aave pool interface 
 import "@aave/aave-v3-core/contracts/interfaces/IPool.sol"; 
 
 contract CrowdfundingDefi is Ownable {
+
+    // Aave V3 Polygon mainnet address
+    Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
+    // Aave V3 Polygon testnest (mumbai) address
+    // 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F
 
     // address of the owner of the crowdfund 
     address payable public owner;
@@ -34,7 +39,7 @@ contract CrowdfundingDefi is Ownable {
     uint256 fundingTarget;
 
     // variable for the funding deadline 
-    uint public fundingRoundDeadline;
+    uint256 public fundingRoundDeadline;
 
     //variable to keep track of the total funding that has been raised 
     uint256 public fundingRaised;
@@ -140,7 +145,12 @@ contract CrowdfundingDefi is Ownable {
 
     // integrate with aave on the polygon network
     function yieldFarm(address _aaveTokenAddress) internal {
+        // calculating the extra funds to use 
+        uint256 leftOver = fundingRaised - fundingTarget;
+        
         // deposit extra funds in aave
+        
+        
         // convert the eth to a stablecoin 
         // time period? - 30-180days..?
 
