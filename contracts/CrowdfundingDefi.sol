@@ -145,7 +145,7 @@ contract CrowdfundingDefi is Ownable {
 
     // withdraw function - for owner of fundraiser
     function withdraw(uint256 _amount) payable onlyOwner {
-        msg.sender.transfer(_amount);
+        payable(msg.sender).transfer(_amount);
     }
 
     // function to interact with aave on the polygon network - will be called from the closeFundingRound function 
