@@ -16,24 +16,23 @@ import "@aave/aave-v3-core/contracts/interfaces/IPool.sol";
 
 contract CrowdfundingDefi is Ownable {
 
-    // Aave V3 Polygon mainnet address
-    Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
-    // Aave V3 Polygon testnest (mumbai) address
-    // 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F
-    // DAI stablecoin address on polygon network 
-    // 0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063
-
     // address of the owner of the crowdfund 
     address payable public owner;
 
-    // keeping track of people who donated so can give them a gift/airdop later
+    // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded; 
     // generous people - those who donate >= 10 ETH 
     address payable[] public generousPeople;  
-    
     //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
     mapping(address => bool) thisPersonFunded;
 
+    // Aave V3 Polygon mainnet address
+    Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
+    // Aave V3 Polygon testnest (mumbai) address
+    // 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
+    // USDT stablecoin address on polygon network 
+    // address USDT = 0xc2132D05D31c914a87C6611C10748AEb04B58e8F;
+    
     // 10usd minimum amount
     uint256 minimumAmount = 10 * 10**18;
 
@@ -43,7 +42,7 @@ contract CrowdfundingDefi is Ownable {
     // variable for the funding deadline 
     uint256 public fundingRoundDeadline;
 
-    //variable to keep track of the total funding that has been raised 
+    // variable to keep track of the total funding that has been raised 
     uint256 public fundingRaised;
 
     // eth price feed from chainlink 
@@ -66,7 +65,7 @@ contract CrowdfundingDefi is Ownable {
         _;
     }
 
-    // if funding exceeds target, put extra funds in a lending protocol (Aave) to reward donators later
+    // fundingState must be closed before yielding starts 
     modifier yielding() {
         require(fundingState == FUNDING_STATE.CLOSED);
         _;
@@ -86,6 +85,7 @@ contract CrowdfundingDefi is Ownable {
         fundingTarget = _fundingTarget;
     }
 
+    // Series A
     function openSeriesAFunding(uint256 _targetA, uint _fundingRoundDeadline) onlyOwner startFunding {
         fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_A;
@@ -93,6 +93,7 @@ contract CrowdfundingDefi is Ownable {
         emit fundingRoundStarted();
     }
 
+    // Series B
     function openSeriesBFunding(uint256 _targetB, uint _fundingRoundDeadline) onlyOwner startFunding {
         fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_B;
@@ -100,6 +101,7 @@ contract CrowdfundingDefi is Ownable {
         emit fundingRoundStarted();
     }
 
+    // Series C
     function openSeriesCFunding(uint256 _targetC, uint _fundingRoundDeadline) onlyOwner startFunding {
         fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
         fundingState = FUNDING_STATE.SERIES_C;
@@ -107,7 +109,8 @@ contract CrowdfundingDefi is Ownable {
         emit fundingRoundStarted();
     }
 
-    // end of funding round - put extra funds in Aave 
+    // end of funding round 
+    // if funding exceeds target, put extra funds in Aave to reward donators later
     function closeFundingRound() onlyOwner returns (uint256) {
         require(fundingState != FUNDING_STATE.CLOSED, "Funding round is already closed.");
         require(fundingRoundDeadline <= now, "Time still remains in this funding round.");
@@ -141,33 +144,31 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // withdraw function - for owner of fundraiser
-    function withdraw(uint256 _amount) onlyOwner {
+    function withdraw(uint256 _amount) payable onlyOwner {
         msg.sender.transfer(_amount);
     }
 
-    // integrate with aave on the polygon network
+    // function to interact with aave on the polygon network - will be called from the closeFundingRound function 
     function yieldFarm(address _aaveTokenAddress) internal {
         // calculating the extra funds to use 
         uint256 leftOver = fundingRaised - fundingTarget;
         
-        // deposit extra funds in aave
-        // convert the eth to a stablecoin 
-        // time period? - 30-180days..?
+        // convert the eth to USDT - use QuickSwap  
 
-        // swap eth for usdt / usdc / dai
+        // deposit USDT in Aave
+        // transferFrom, approve, supply 
+        // time period? - 30-180days..? - can use a python script to call it after this time period 
 
-        // instantiating aave interface 
-        // IPool aavePool;
-        //aavePool = IPool(_aaveTokenAddress);
-        // supply the usdt to aave v3
+        // supply the swapped usdt to aave v3
         // aaveV3Pool.supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode);
         
         emit startedYieldFarming();
         // withdraw after x amount of days - would need to create another func => endYield   
     }
 
+
 /*
-    // this way will simply deposit the eth to aave - without swapping to usdt  or bridging
+    // this way will simply deposit the eth to aave - without swapping to usdt 
     // if I decide to use this, will need to import the IWETHGateway contract and IERC20 for aWETH
     
     function yieldFarm() internal {
@@ -207,10 +208,12 @@ contract CrowdfundingDefi is Ownable {
 */
 
     // function for donors to redeem their gift/rewards - saves gas
-    function claimRewards() external {
+    function claimRewards() external payable {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
         
-        /*payable(msg.sender).transfer(peopleWhoFunded[msg.sender]); */
+        // uint256 rewards;
+        // calculation...
+        // payable(msg.sender).transfer(rewards); 
     }
 
 
