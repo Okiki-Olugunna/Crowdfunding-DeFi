@@ -149,23 +149,19 @@ contract CrowdfundingDefi is Ownable {
         uint256 leftOver = fundingRaised - fundingTarget;
         
         // deposit extra funds in aave
-        
-        
         // convert the eth to a stablecoin 
         // time period? - 30-180days..?
 
         // swap eth for usdt / usdc / dai
-        // bridge the usdt to polygon network 
 
-        //instantiating aave interface 
-        IPool aavePool;
-        aavePool = IPool(_aaveTokenAddress);
-        // supply the usdt to aave-v3-core 
-        aavePool.supply();
-
-        emit startedYieldFarming();
-        // withdraw after x amount of days - would need to create another func => endYield
+        // instantiating aave interface 
+        // IPool aavePool;
+        //aavePool = IPool(_aaveTokenAddress);
+        // supply the usdt to aave v3
+        // aaveV3Pool.supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode);
         
+        emit startedYieldFarming();
+        // withdraw after x amount of days - would need to create another func => endYield   
     }
 
 /*
@@ -184,6 +180,7 @@ contract CrowdfundingDefi is Ownable {
     //when time has hit threshold, withdraw from lending pool
     function endYieldFarming() private onlyOwner {
         // call withdraw function from aave ipool interface 
+        // aaveV3Pool.withdraw(address asset, uint256 amount, address to);
         
     }
     
