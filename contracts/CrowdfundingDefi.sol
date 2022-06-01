@@ -117,7 +117,7 @@ contract CrowdfundingDefi is Ownable {
 
         fundingState = FUNDING_STATE.CLOSED;
         if (fundingRaised > fundingTarget) {
-            yieldFarm();
+            _yieldFarm();
         }
 
         return fundingRaised;
@@ -149,7 +149,7 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // function to interact with aave on the polygon network - will be called from the closeFundingRound function 
-    function yieldFarm(address _aaveTokenAddress) internal {
+    function _yieldFarm(address _aaveTokenAddress) internal {
         // calculating the extra funds to use 
         uint256 leftOver = fundingRaised - fundingTarget;
         
