@@ -32,18 +32,12 @@ contract CrowdfundingDefi is Ownable {
     IERC20 USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
     // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
 
-    // variable for the funding target 
-    uint256 fundingTarget;
-
-    // variable for the funding deadline 
+    uint256 public fundingTarget;
     uint256 public fundingRoundDeadline;
-
-    // variable to keep track of the total funding that has been raised 
     uint256 public fundingRaised;
 
     // eth price feed from chainlink 
     AggregatorV3Interface public ethUSDPricefeed;
-    
     // variable for the minimum funding amount - 10 usd
     uint256 minimumAmount = 10 * 10**18;
 
@@ -76,13 +70,13 @@ contract CrowdfundingDefi is Ownable {
     event specialFunder(address indexed _gratefulTo); //these are people who donate more than or equal to 10 ETH
     event startedYieldFarming();
 
-    constructor(address _priceFeedAddress, uint256 _fundingTarget, address _owners) public {
-        //owner = msg.sender;
-        owner = _owners;
+    constructor(address _priceFeedAddress, uint256 _fundingTarget, address _crowdfundOwners) public {
+        owner = _crowdfundOwners;
         ethUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         fundingState = FUNDING_STATE.CLOSED;
         fundingTarget = _fundingTarget;
     }
+    
 
     // Series A
     function openSeriesAFunding(uint256 _targetA, uint _fundingRoundDeadline) onlyOwner startFunding {
@@ -107,9 +101,9 @@ contract CrowdfundingDefi is Ownable {
 
         emit fundingRoundStarted();
     }
+    
 
-    // end of funding round 
-    // if funding exceeds target, put extra funds in Aave to reward donators later
+    // end of funding round - if funding exceeds target, put extra funds in Aave to reward donators later
     function closeFundingRound() onlyOwner returns (uint256) {
         require(fundingState != FUNDING_STATE.CLOSED, "Funding round is already closed.");
         require(fundingRoundDeadline <= now, "Time still remains in this funding round.");
@@ -121,6 +115,7 @@ contract CrowdfundingDefi is Ownable {
 
         return fundingRaised;
     }
+    
 
     // fund function - minimum donation of $10
     function fund() external payable {
@@ -141,11 +136,13 @@ contract CrowdfundingDefi is Ownable {
         
         thisPersonFunded[msg.sender] = true;
     }
+    
 
     // withdraw function - for owner of fundraiser
     function withdraw(uint256 _amount) payable onlyOwner {
         payable(msg.sender).transfer(_amount);
     }
+    
 
     // internal function to interact with aave on the polygon network - will be called from the closeFundingRound function 
     function _yieldFarm(address _aaveTokenAddress) internal {
