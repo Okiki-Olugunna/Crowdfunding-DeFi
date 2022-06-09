@@ -2,8 +2,9 @@
 
 // deploy to polygon network 
 pragma solidity ^0.8.0; 
+pragma abicoder v2;
 
-//  ERC20 Interface
+// ERC20 interface
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 // Ownable contract 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -13,6 +14,10 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@aave/aave-v3-core/contracts/protocol/pool/Pool.sol";
 // aave pool interface 
 import "@aave/aave-v3-core/contracts/interfaces/IPool.sol"; 
+// Uniswap V3 contracts for swaps
+import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
+import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
+
 
 contract CrowdfundingDefi is Ownable {
 
@@ -28,9 +33,13 @@ contract CrowdfundingDefi is Ownable {
 
     // Aave V3 Polygon mainnet address
     Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
-    // USDT stablecoin address on polygon network 
-    IERC20 USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
     // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
+    // Uniswap V3 Swap Router
+    ISwapRouter public immutable swapRouter;
+    // WETH contract address on polygon 
+    IERC20 public constant WETH = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619;
+    // USDT contract address on polygon  
+    IERC20 public constant USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
 
     uint256 public fundingTarget;
     uint256 public fundingRoundDeadline;
@@ -70,9 +79,10 @@ contract CrowdfundingDefi is Ownable {
     event specialFunder(address indexed _gratefulTo); //these are people who donate more than or equal to 10 ETH
     event startedYieldFarming();
 
-    constructor(address _priceFeedAddress, uint256 _fundingTarget, address _crowdfundOwners) public {
+    constructor(uint256 _fundingTarget, address _crowdfundOwners, address _priceFeedAddress, ISwapRouter _swapRouter) public {
         owner = _crowdfundOwners;
         ethUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
+        swapRouter = _swapRouter;
         fundingState = FUNDING_STATE.CLOSED;
         fundingTarget = _fundingTarget;
     }
@@ -149,11 +159,11 @@ contract CrowdfundingDefi is Ownable {
         // calculating the extra funds to use 
         uint256 leftOver = fundingRaised - fundingTarget;
         
-        // convert the eth to USDT - use QuickSwap  
+        // convert the WETH to USDT using Uniswap V3 router  
 
         // deposit USDT in Aave
         // transferFrom, approve, supply 
-        // time period? - 30-180days..? - can use a python script to call it after this time period 
+        // time period? - 30-180days..?  
 
         // supply the swapped usdt to aave v3
         // aaveV3Pool.supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode);
