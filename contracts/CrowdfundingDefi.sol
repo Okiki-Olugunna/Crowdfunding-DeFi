@@ -39,11 +39,12 @@ contract CrowdfundingDefi is Ownable {
 
     // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded; 
-    //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
+    // another mapping for extra security when redeeming rewards
     mapping(address => bool) thisPersonFunded;
     // generous people - those who donate >= 10 ETH 
     address payable[] public generousPeople;  
 
+    // public funding variables 
     uint256 public fundingTarget;
     uint256 public fundingRoundDeadline;
     uint256 public fundingRaised;
