@@ -28,10 +28,9 @@ contract CrowdfundingDefi is Ownable {
 
     // Aave V3 Polygon mainnet address
     Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
-    // Aave V3 Polygon testnest (mumbai) address
-    // 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
+    // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
     // USDT stablecoin address on polygon network 
-    // address USDT = 0xc2132D05D31c914a87C6611C10748AEb04B58e8F;
+    IERC20 USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
     
     // 10usd minimum amount
     uint256 minimumAmount = 10 * 10**18;
