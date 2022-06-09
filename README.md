@@ -4,5 +4,5 @@
 - These funds will be kept on Aave for a fixed period of time, then gifted and distributed back to those who donated to the fundraiser 
 
 ##### Currently working on:
-- DeFi integration with Aave 
+- DeFi integration with Uniswap V3 & Aave V3
 - a countdown feature that automatically ends a funding round, without having to manually call the closeFundingRound function (currently using block.timestamp)
