@@ -123,10 +123,10 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // fund function - for anyone - amount - minimum: $10
-    function fund(uint256 _amount) external payable {
+    function fund() external payable {
         require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
-            _amount >= 0.0005 ether, // change this later to use getConversionRate function 
+            msg.value >= 0.0005 ether, // change this later to use getConversionRate function 
             "Minimum funding is $10. Please increase your donation"
         );
         require(fundingState != FUNDING_STATE.CLOSED);
