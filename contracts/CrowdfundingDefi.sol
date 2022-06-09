@@ -21,6 +21,19 @@ import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
 
 contract CrowdfundingDefi is Ownable {
 
+    // Uniswap V3 Swap Router
+    ISwapRouter public immutable swapRouter;
+    // Aave V3 Polygon mainnet address
+    Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
+    // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
+    
+    // WETH contract address on polygon 
+    IERC20 public constant WETH = IERC20(0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619);
+    // DAI contract address on polygon 
+    IERC20 public constant DAI = IERC20(0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063);
+    // USDT contract address on polygon  
+    IERC20 public constant USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
+
     // address of the owner of the crowdfund 
     address payable public owner;
 
@@ -31,16 +44,6 @@ contract CrowdfundingDefi is Ownable {
     // generous people - those who donate >= 10 ETH 
     address payable[] public generousPeople;  
 
-    // Aave V3 Polygon mainnet address
-    Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
-    // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
-    // Uniswap V3 Swap Router
-    ISwapRouter public immutable swapRouter;
-    // WETH contract address on polygon 
-    IERC20 public constant WETH = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619;
-    // USDT contract address on polygon  
-    IERC20 public constant USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
-
     uint256 public fundingTarget;
     uint256 public fundingRoundDeadline;
     uint256 public fundingRaised;
@@ -50,8 +53,7 @@ contract CrowdfundingDefi is Ownable {
     // variable for the minimum funding amount - 10 usd
     uint256 minimumAmount = 10 * 10**18;
 
-    // different states and rounds of funding
-    // you have a maximum of 3 rounds to reach your funding target
+    // different states and rounds of funding - you have a max. of 3 rounds to reach your funding target
     enum FUNDING_STATE {
         CLOSED,
         SERIES_A,
@@ -173,7 +175,7 @@ contract CrowdfundingDefi is Ownable {
     }
 
 
-    //when time has hit threshold, withdraw from lending pool
+    // when time has hit threshold, withdraw from lending pool
     function endYieldFarming() private onlyOwner {
         // call withdraw function from aave ipool interface 
         // aaveV3Pool.withdraw(address asset, uint256 amount, address to);
