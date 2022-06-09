@@ -21,10 +21,10 @@ contract CrowdfundingDefi is Ownable {
 
     // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded; 
-    // generous people - those who donate >= 10 ETH 
-    address payable[] public generousPeople;  
     //adding another mapping that maps an address to a boolean for extra security when redeeming rewards
     mapping(address => bool) thisPersonFunded;
+    // generous people - those who donate >= 10 ETH 
+    address payable[] public generousPeople;  
 
     // Aave V3 Polygon mainnet address
     Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
