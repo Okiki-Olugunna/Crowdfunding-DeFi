@@ -173,38 +173,12 @@ contract CrowdfundingDefi is Ownable {
     }
 
 
-/*
-    // this way will simply deposit the eth to aave - without swapping to usdt 
-    // if I decide to use this, will need to import the IWETHGateway contract and IERC20 for aWETH
-    
-    function yieldFarm() internal {
-        // Depositing ETH through the AAVE WETH gateway
-        gateway.depositETH{value: (address(this).balance) - fundingTarget}(address(this), 0); 
-        
-        emit startedYieldFarming();
-    }
-*/
-
-
     //when time has hit threshold, withdraw from lending pool
     function endYieldFarming() private onlyOwner {
         // call withdraw function from aave ipool interface 
         // aaveV3Pool.withdraw(address asset, uint256 amount, address to);
         
     }
-    
-    
-/*
-    // Alternative way to end the farming if not bridging or swapping
-    function endYieldFarming() private onlyOwner {
-        aWETH.approve(address(gateway), <amount>);
-
-        // withdrawing the interest & ETH to this contract
-        gateway.withdrawETH(type(uint256).max, address(this));
-
-        emit endedYieldFarming();
-    }
-*/
     
 
 /*
