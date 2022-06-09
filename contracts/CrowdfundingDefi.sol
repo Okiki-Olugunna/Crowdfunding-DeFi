@@ -122,7 +122,7 @@ contract CrowdfundingDefi is Ownable {
         return fundingRaised;
     }
 
-    // fund function - for anyone - amount - minimum: $10
+    // fund function - minimum donation of $10
     function fund() external payable {
         require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
