@@ -28,12 +28,9 @@ contract CrowdfundingDefi is Ownable {
 
     // Aave V3 Polygon mainnet address
     Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
-    // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
     // USDT stablecoin address on polygon network 
     IERC20 USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
-    
-    // 10usd minimum amount
-    uint256 minimumAmount = 10 * 10**18;
+    // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
 
     // variable for the funding target 
     uint256 fundingTarget;
@@ -46,6 +43,9 @@ contract CrowdfundingDefi is Ownable {
 
     // eth price feed from chainlink 
     AggregatorV3Interface public ethUSDPricefeed;
+    
+    // variable for the minimum funding amount - 10 usd
+    uint256 minimumAmount = 10 * 10**18;
 
     // different states and rounds of funding
     // you have a maximum of 3 rounds to reach your funding target
@@ -126,7 +126,7 @@ contract CrowdfundingDefi is Ownable {
     function fund(uint256 _amount) external payable {
         require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
-            _amount >= 0.0005 ether, // change this later to use convert function 
+            _amount >= 0.0005 ether, // change this later to use getConversionRate function 
             "Minimum funding is $10. Please increase your donation"
         );
         require(fundingState != FUNDING_STATE.CLOSED);
@@ -147,7 +147,7 @@ contract CrowdfundingDefi is Ownable {
         payable(msg.sender).transfer(_amount);
     }
 
-    // function to interact with aave on the polygon network - will be called from the closeFundingRound function 
+    // internal function to interact with aave on the polygon network - will be called from the closeFundingRound function 
     function _yieldFarm(address _aaveTokenAddress) internal {
         // calculating the extra funds to use 
         uint256 leftOver = fundingRaised - fundingTarget;
