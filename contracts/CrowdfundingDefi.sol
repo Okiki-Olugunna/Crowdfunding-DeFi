@@ -51,6 +51,9 @@ contract CrowdfundingDefi is Ownable {
     uint256 public fundingTarget;
     uint256 public fundingRoundDeadline;
     uint256 public fundingRaised;
+    
+    // variable to track when yield farming ends 
+    uint256 endOfYieldPeriod; 
 
     // eth price feed from chainlink 
     AggregatorV3Interface public ethUSDPricefeed;
@@ -83,7 +86,7 @@ contract CrowdfundingDefi is Ownable {
     event fundingRoundClosed();
     event someoneFunded(address indexed _person, uint256 _amount);
     event specialFunder(address indexed _gratefulTo); //these are people who donate more than or equal to 10 ETH
-    event startedYieldFarming();
+    event startedYieldFarming(uint256);
 
     constructor(uint256 _fundingTarget, address _crowdfundOwners, address _priceFeedAddress, ISwapRouter _swapRouter) public {
         owner = _crowdfundOwners;
@@ -127,6 +130,7 @@ contract CrowdfundingDefi is Ownable {
         fundingState = FUNDING_STATE.CLOSED;
         if (fundingRaised > fundingTarget) {
             _yieldFarm();
+            endOfYieldPeriod = block.timestamp + 180 days;
         }
 
         return fundingRaised;
@@ -197,28 +201,24 @@ contract CrowdfundingDefi is Ownable {
         // supply the swapped usdt to aave v3
         aaveV3Pool.supply(address(USDT), swappedUSDT, address(this), 0);
         
-        emit startedYieldFarming();
-        
-        // withdraw after x amount of days - would need to create another func => endYield  
-        // time period? - 30-180days..?  
+        emit startedYieldFarming(block.timestamp);
     }
 
-
+    // only after after 180 amount of days can the yieldFarming be ended  
     // when time has hit threshold, withdraw from lending pool
     function endYieldFarming() private onlyOwner {
+        require(block.timestamp >= endOfYieldPeriod, "Yielding cannot end yet.");
+    
         // call withdraw function from aave ipool interface 
         // aaveV3Pool.withdraw(address asset, uint256 amount, address to);
+        
+        // calculate the new balance of usdt 
+        // swap the usdt back to weth on uniswap v3 
         
     }
     
 
-/*
-    // function to reward donors - or they can claim instead to save gas
-    function rewardDonators() internal payable {
-    }
-*/
-
-    // function for donors to redeem their gift/rewards - saves gas
+    // function for donors to redeem their gift/rewards - saves gas compared to distributing in a for loop 
     function claimRewards() external payable {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
         
