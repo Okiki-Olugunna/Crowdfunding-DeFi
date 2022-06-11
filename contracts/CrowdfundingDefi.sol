@@ -33,6 +33,8 @@ contract CrowdfundingDefi is Ownable {
     IERC20 public constant DAI = IERC20(0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063);
     // USDT contract address on polygon  
     IERC20 public constant USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
+    // Matic Aave interest bearing USDT
+    IERC20 public constant aUSDT = IERC20(0xDAE5F1590db13E3B40423B5b5c5fbf175515910b);
     
     // uniswap pool fee 
     uint24 public constant poolFee = 3000;
@@ -184,14 +186,14 @@ contract CrowdfundingDefi is Ownable {
                 deadline: block.timestamp,
                 amountIn: leftOver,
                 amountOutMinimum: 0, // change this later by using chainlink oracle 
-                sqrtPriceLimitX96: 0 // swap exact input amount
+                sqrtPriceLimitX96: 0 // swapping exact input amount
             });
 
         // This call to `exactInputSingle` will execute the swap.
-        amountOut = swapRouter.exactInputSingle(params);
+        uint256 amountOut = swapRouter.exactInputSingle(params);
 
         // calculate how much usdt we have 
-        swappedUSDT = USDT.balanceOf(address(this));
+        uint256 swappedUSDT = USDT.balanceOf(address(this));
         
         // deposit USDT in Aave
         // approve, transferFrom, supply 
@@ -206,24 +208,48 @@ contract CrowdfundingDefi is Ownable {
 
     // only after after 180 amount of days can the yieldFarming be ended  
     // when time has hit threshold, withdraw from lending pool
-    function endYieldFarming() private onlyOwner {
+    function endYieldFarming() external onlyOwner returns(uint256 amountOut) {
         require(block.timestamp >= endOfYieldPeriod, "Yielding cannot end yet.");
     
-        // call withdraw function from aave ipool interface 
-        // aaveV3Pool.withdraw(address asset, uint256 amount, address to);
+        // claculate total balance on aave 
+        uint totalBalance = aUSDT.balanceOf(address(this));
+        // approving the pool to spend the balance
+        aUSDT.approve(address(aaveV3Pool), totalBalance);
+        // withdraw function from aave  
+        aaveV3Pool.withdraw(address(USDT), totalBalance, address(this));
         
         // calculate the new balance of usdt 
-        // swap the usdt back to weth on uniswap v3 
+        uint256 yieldedBalance = USDT.balanceOf(address(this));
         
+        // swap the usdt back to weth on uniswap v3 
+        // approving uniswap v3 to spend the tokens 
+        TransferHelper.safeApprove(USDT, address(swapRouter), yieldedBalance);
+        // transferring the left over to uniswap v3
+        TransferHelper.safeTransferFrom(USDT, address(this), address(swapRouter), yieldedBalance);
+        // swap back to weth 
+        ISwapRouter.ExactInputSingleParams memory params =
+            ISwapRouter.ExactInputSingleParams({
+                tokenIn: USDT,
+                tokenOut: WETH,
+                fee: poolFee,
+                recipient: address(this),
+                deadline: block.timestamp,
+                amountIn: yieldedBalance,
+                amountOutMinimum: 0, // change this later by using chainlink oracle 
+                sqrtPriceLimitX96: 0 // swapping exact input amount
+            });
+
+        // This call to `exactInputSingle` will execute the swap.
+        amountOut = swapRouter.exactInputSingle(params);
     }
     
 
-    // function for donors to redeem their gift/rewards - saves gas compared to distributing in a for loop 
+    // function for donors to redeem their rewards - saves gas compared to distributing in a for loop 
     function claimRewards() external payable {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
         
         // uint256 rewards;
-        // calculation...
+        // calculation... 
         // payable(msg.sender).transfer(rewards); 
     }
 
