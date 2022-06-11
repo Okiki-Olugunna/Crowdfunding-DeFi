@@ -33,6 +33,9 @@ contract CrowdfundingDefi is Ownable {
     IERC20 public constant DAI = IERC20(0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063);
     // USDT contract address on polygon  
     IERC20 public constant USDT = IERC20(0xc2132D05D31c914a87C6611C10748AEb04B58e8F);
+    
+    // uniswap pool fee 
+    uint24 public constant poolFee = 3000;
 
     // address of the owner of the crowdfund 
     address payable public owner;
@@ -162,8 +165,30 @@ contract CrowdfundingDefi is Ownable {
         // calculating the extra funds to use 
         uint256 leftOver = fundingRaised - fundingTarget;
         
-        // convert the WETH to USDT using Uniswap V3 router  
+        // convert the WETH to USDT using Uniswap V3 router:
+        // approving uniswap v3 to spend the tokens 
+        TransferHelper.safeApprove(WETH, address(swapRouter), leftOver);
+        // transferring the left over to uniswap v3
+        TransferHelper.safeTransferFrom(WETH, address(this), address(swapRouter), leftOver);
+        // swap to usdt 
+        ISwapRouter.ExactInputSingleParams memory params =
+            ISwapRouter.ExactInputSingleParams({
+                tokenIn: WETH,
+                tokenOut: USDT,
+                fee: poolFee,
+                recipient: address(this),
+                deadline: block.timestamp,
+                amountIn: leftOver,
+                amountOutMinimum: 0, // change this later by using chainlink oracle 
+                sqrtPriceLimitX96: 0 // swap exact input amount
+            });
 
+        // This call to `exactInputSingle` will execute the swap.
+        amountOut = swapRouter.exactInputSingle(params);
+
+        // calculate how much usdt we have 
+        
+        
         // deposit USDT in Aave
         // transferFrom, approve, supply 
         // time period? - 30-180days..?  
