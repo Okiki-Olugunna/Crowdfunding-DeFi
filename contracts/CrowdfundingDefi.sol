@@ -187,17 +187,20 @@ contract CrowdfundingDefi is Ownable {
         amountOut = swapRouter.exactInputSingle(params);
 
         // calculate how much usdt we have 
-        
+        swappedUSDT = USDT.balanceOf(address(this));
         
         // deposit USDT in Aave
-        // transferFrom, approve, supply 
-        // time period? - 30-180days..?  
-
+        // approve, transferFrom, supply 
+        USDT.approve(address(aaveV3Pool), swappedUSDT);
+        USDT.transferFrom(address(this), aaveV3Pool, swappedUSDT);
+        
         // supply the swapped usdt to aave v3
-        // aaveV3Pool.supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode);
+        aaveV3Pool.supply(address(USDT), swappedUSDT, address(this), 0);
         
         emit startedYieldFarming();
-        // withdraw after x amount of days - would need to create another func => endYield   
+        
+        // withdraw after x amount of days - would need to create another func => endYield  
+        // time period? - 30-180days..?  
     }
 
 
