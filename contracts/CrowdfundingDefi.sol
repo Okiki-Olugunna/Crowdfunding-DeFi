@@ -48,6 +48,8 @@ contract CrowdfundingDefi is Ownable {
     mapping(address => bool) thisPersonFunded;
     // generous people - those who donate >= 10 ETH 
     address payable[] public generousPeople;  
+    // array of all funders 
+    address[] public allFunders;
 
     // public funding variables 
     uint256 public fundingTarget;
@@ -56,6 +58,8 @@ contract CrowdfundingDefi is Ownable {
     
     // variable to track when yield farming ends 
     uint256 endOfYieldPeriod; 
+    // variable to store the reward / give back to donors
+    uint256 giveBackToEachDonor;
 
     // eth price feed from chainlink 
     AggregatorV3Interface public ethUSDPricefeed;
@@ -139,7 +143,7 @@ contract CrowdfundingDefi is Ownable {
     }
     
 
-    // fund function - minimum donation of $10
+    // fund function - minimum donation of $10 worth of ETH
     function fund() external payable {
         require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
@@ -157,6 +161,7 @@ contract CrowdfundingDefi is Ownable {
         }
         
         thisPersonFunded[msg.sender] = true;
+        allFunders.push(msg.sender);
     }
     
 
@@ -208,7 +213,7 @@ contract CrowdfundingDefi is Ownable {
 
     // only after after 180 amount of days can the yieldFarming be ended  
     // when time has hit threshold, withdraw from lending pool
-    function endYieldFarming() external onlyOwner returns(uint256 amountOut) {
+    function endYieldFarming() external onlyOwner {
         require(block.timestamp >= endOfYieldPeriod, "Yielding cannot end yet.");
     
         // claculate total balance on aave 
@@ -240,20 +245,28 @@ contract CrowdfundingDefi is Ownable {
             });
 
         // This call to `exactInputSingle` will execute the swap.
-        amountOut = swapRouter.exactInputSingle(params);
+        uint256 amountOut = swapRouter.exactInputSingle(params);
+        
+        // calculate the rewards each donor will get with an internal function
+        _rewardsCalculation(); 
     }
     
+    
+    function _rewardsCalculation() internal pure {
+        uint256 wethHoldings = WETH.balanceOf(address(this));
+        // divide the holdings by the number of people who donated 
+        giveBackToEachDonor = wethHoldings / allFunders.length;
+    }
 
     // function for donors to redeem their rewards - saves gas compared to distributing in a for loop 
     function claimRewards() external payable {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
-        
-        // uint256 rewards;
-        // calculation... 
-        // payable(msg.sender).transfer(rewards); 
+        WETH.transfer(msg.sender, giveBackToEachDonor); 
     }
+    
 
 
+    // functions to interact with chainlink oracle: 
     // converting the amount of ETH to USD
     function getConversionRate(uint256 ethAmount)
         public
