@@ -58,7 +58,7 @@ contract CrowdfundingDefi is Ownable {
     
     // variable to track when yield farming ends 
     uint256 endOfYieldPeriod; 
-    // variable to store the reward / give back to donors
+    // variable to store the reward to give back to donors
     uint256 giveBackToEachDonor;
 
     // eth price feed from chainlink 
@@ -254,6 +254,7 @@ contract CrowdfundingDefi is Ownable {
     }
     
     
+    // internal function called at the end of endYieldFarming 
     function _rewardsCalculation() internal pure {
         uint256 wethHoldings = WETH.balanceOf(address(this));
         // divide the holdings by the number of people who donated 
