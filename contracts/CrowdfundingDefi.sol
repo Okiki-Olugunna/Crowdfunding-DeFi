@@ -143,19 +143,21 @@ contract CrowdfundingDefi is Ownable {
     }
     
 
-    // fund function - minimum donation of $10 worth of ETH
-    function fund() external payable {
+    // fund function - using WETH - minimum donation of $10 worth of ETH
+    function fund(uint256 _amount) external {
         require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
-            msg.value >= 0.0005 ether, // change this later to use getConversionRate function 
+            _amount >= 500000000000000, // equiv. to 0.0005 ether - change this later to use getConversionRate function 
             "Minimum funding is $10. Please increase your donation"
         );
         require(fundingState != FUNDING_STATE.CLOSED);
-
-        fundingRaised += msg.value;
-        peopleWhoFunded[msg.sender] += msg.value;
-
-        if (msg.value >= 10 ether) {
+        
+        WETH.transferFrom(msg.sender, address(this), _amount);
+        fundingRaised += _amount;
+        peopleWhoFunded[msg.sender] += _amount;
+        
+        // if donation is greater than 10 WETH
+        if (_amount >= 10000000000000000000) {
             generousPeople.push(msg.sender);
             emit specialFunder(msg.sender);
         }
@@ -165,9 +167,9 @@ contract CrowdfundingDefi is Ownable {
     }
     
 
-    // withdraw function - for owner of fundraiser
-    function withdraw(uint256 _amount) payable onlyOwner {
-        payable(msg.sender).transfer(_amount);
+    // withdraw function - for owner of fundraiser to withdraw the WETH 
+    function withdraw(uint256 _amount) onlyOwner {
+        WETH.transferFrom(address(this), msg.sender, _amount);
     }
     
 
