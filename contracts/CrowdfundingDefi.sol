@@ -44,8 +44,11 @@ contract CrowdfundingDefi is Ownable {
 
     // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded; 
-    // another mapping for extra security when redeeming rewards
+    // mapping for security check when redeeming rewards
     mapping(address => bool) thisPersonFunded;
+    // tracking whether funders have claimed their rewards 
+    mapping(address => bool) hasClaimedRewards;
+    
     // generous people - those who donate >= 10 ETH 
     address payable[] public generousPeople;  
     // array of all funders 
@@ -86,6 +89,13 @@ contract CrowdfundingDefi is Ownable {
     modifier yielding() {
         require(fundingState == FUNDING_STATE.CLOSED);
         _;
+    }
+    
+    // can only claim rewards once 
+    modifier hasNotClaimedRewards() {
+        require(!hasClaimedRewards[msg.sender], "You have already claimed your reward.");
+        _;
+        hasClaimedRewards[msg.sender] = true;
     }
 
     event fundingRoundStarted();
@@ -262,7 +272,7 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // function for donors to redeem their rewards - saves gas compared to distributing in a for loop 
-    function claimRewards() external payable {
+    function claimRewards() external hasNotClaimedRewards {
         require(thisPersonFunded[msg.sender] = true, "You cannot claim any rewards.");
         WETH.transfer(msg.sender, giveBackToEachDonor); 
     }
