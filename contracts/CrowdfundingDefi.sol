@@ -67,7 +67,7 @@ contract CrowdfundingDefi is Ownable {
     // eth price feed from chainlink 
     AggregatorV3Interface public ethUSDPricefeed;
     // variable for the minimum funding amount - 10 usd
-    uint256 minimumAmount = 10 * 10**18;
+    uint256 public minimumAmount = 10 * 1e18;
 
     // different states and rounds of funding - you have a max. of 3 rounds to reach your funding target
     enum FUNDING_STATE {
@@ -153,11 +153,11 @@ contract CrowdfundingDefi is Ownable {
     }
     
 
-    // fund function - using WETH - minimum donation of $10 worth of ETH
+    // fund function - using WETH - minimum donation of $10 worth 
     function fund(uint256 _amount) external {
         require(fundingRoundDeadline >= block.timestamp, "No funding round is currently open");
         require(
-            _amount >= 500000000000000, // equiv. to 0.0005 ether - change this later to use getConversionRate function 
+            getConversionRate(_amount) >= minimumAmount,  
             "Minimum funding is $10. Please increase your donation"
         );
         require(fundingState != FUNDING_STATE.CLOSED);
@@ -167,7 +167,7 @@ contract CrowdfundingDefi is Ownable {
         peopleWhoFunded[msg.sender] += _amount;
         
         // if donation is greater than 10 WETH
-        if (_amount >= 10000000000000000000) {
+        if (_amount >= 10e18) {
             generousPeople.push(msg.sender);
             emit specialFunder(msg.sender);
         }
@@ -287,14 +287,14 @@ contract CrowdfundingDefi is Ownable {
         returns (uint256)
     {
         uint256 ethPrice = getPrice();
-        uint256 ethAmountInUSD = (ethPrice * ethAmount) / 1000000000000000000;
+        uint256 ethAmountInUSD = (ethPrice * ethAmount) / 1e18;
         return ethAmountInUSD;
     }
 
     // function to get the price of the ETH
     function getPrice() public view returns (uint256) {
-        (, int256 answer, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.latestRoundData();
         // converting to wei
-        return uint256(answer * 10000000000);
+        return uint256(price * 1e10);
     }
 }
