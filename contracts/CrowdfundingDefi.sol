@@ -40,7 +40,7 @@ contract CrowdfundingDefi is Ownable {
     uint24 public constant poolFee = 3000;
 
     // address of the owner of the crowdfund 
-    address payable public owner;
+    address payable public immutable owner;
 
     // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded; 
