@@ -67,7 +67,7 @@ contract CrowdfundingDefi is Ownable {
     // eth price feed from chainlink 
     AggregatorV3Interface public ethUSDPricefeed;
     // variable for the minimum funding amount - 10 usd
-    uint256 public minimumAmount = 10 * 1e18;
+    uint256 public constant minimumAmount = 10 * 1e18;
 
     // different states and rounds of funding - you have a max. of 3 rounds to reach your funding target
     enum FUNDING_STATE {
