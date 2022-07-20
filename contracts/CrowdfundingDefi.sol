@@ -39,8 +39,8 @@ contract CrowdfundingDefi is Ownable {
     // uniswap pool fee 
     uint24 public constant poolFee = 3000;
 
-    // address of the owner of the crowdfund 
-    address public immutable owner;
+    // address of the owner of the crowdfund - not needed due to inheriting from Ownable
+    // address public immutable owner;
 
     // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded; 
@@ -104,8 +104,7 @@ contract CrowdfundingDefi is Ownable {
     event specialFunder(address indexed _gratefulTo); //these are people who donate more than or equal to 10 ETH
     event startedYieldFarming(uint256);
 
-    constructor(uint256 _fundingTarget, address _crowdfundOwners, address _priceFeedAddress, ISwapRouter _swapRouter) public {
-        owner = _crowdfundOwners;
+    constructor(uint256 _fundingTarget, address _priceFeedAddress, ISwapRouter _swapRouter) public {
         ethUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         swapRouter = _swapRouter;
         fundingState = FUNDING_STATE.CLOSED;
@@ -114,7 +113,7 @@ contract CrowdfundingDefi is Ownable {
     
 
     // Series A
-    function openSeriesAFunding(uint256 _targetA, uint _fundingRoundDeadline) onlyOwner startFunding {
+    function openSeriesAFunding(uint256 _targetA, uint _fundingRoundDeadline) external onlyOwner startFunding {
         fundingRoundDeadline = block.timestamp + (_fundingRoundDeadline * 1 days);
         fundingState = FUNDING_STATE.SERIES_A;
 
@@ -122,7 +121,7 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // Series B
-    function openSeriesBFunding(uint256 _targetB, uint _fundingRoundDeadline) onlyOwner startFunding {
+    function openSeriesBFunding(uint256 _targetB, uint _fundingRoundDeadline) external onlyOwner startFunding {
         fundingRoundDeadline = block.timestamp + (_fundingRoundDeadline * 1 days);
         fundingState = FUNDING_STATE.SERIES_B;
 
@@ -130,7 +129,7 @@ contract CrowdfundingDefi is Ownable {
     }
 
     // Series C
-    function openSeriesCFunding(uint256 _targetC, uint _fundingRoundDeadline) onlyOwner startFunding {
+    function openSeriesCFunding(uint256 _targetC, uint _fundingRoundDeadline) external onlyOwner startFunding {
         fundingRoundDeadline = block.timestamp + (_fundingRoundDeadline * 1 days);
         fundingState = FUNDING_STATE.SERIES_C;
 
@@ -139,7 +138,7 @@ contract CrowdfundingDefi is Ownable {
     
 
     // end of funding round - if funding exceeds target, put extra funds in Aave to reward donators later
-    function closeFundingRound() onlyOwner returns (uint256) {
+    function closeFundingRound() external onlyOwner returns (uint256) {
         require(fundingState != FUNDING_STATE.CLOSED, "Funding round is already closed.");
         require(fundingRoundDeadline <= block.timestamp, "Time still remains in this funding round.");
 
@@ -178,7 +177,7 @@ contract CrowdfundingDefi is Ownable {
     
 
     // withdraw function - for owner of fundraiser to withdraw the WETH 
-    function withdraw(uint256 _amount) onlyOwner {
+    function withdraw(uint256 _amount) external onlyOwner {
         WETH.transferFrom(address(this), msg.sender, _amount);
     }
     
