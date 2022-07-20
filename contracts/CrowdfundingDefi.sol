@@ -50,7 +50,7 @@ contract CrowdfundingDefi is Ownable {
     mapping(address => bool) hasClaimedRewards;
     
     // generous people - those who donate >= 10 ETH 
-    address payable[] public generousPeople;  
+    address[] public generousPeople;  
     // array of all funders 
     address[] public allFunders;
 
