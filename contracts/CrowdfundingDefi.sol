@@ -142,7 +142,7 @@ contract CrowdfundingDefi is Ownable {
 
         fundingState = FUNDING_STATE.CLOSED;
         if (fundingRaised > fundingTarget) {
-            _yieldFarm(address(WETH));
+            _yieldFarm();
             endOfYieldPeriod = block.timestamp + 180 days;
         }
 
@@ -181,7 +181,7 @@ contract CrowdfundingDefi is Ownable {
     
 
     // internal function to interact with aave on the polygon network - will be called from the closeFundingRound function 
-    function _yieldFarm(address _aaveTokenAddress) internal {
+    function _yieldFarm() internal {
         // calculating the extra funds to use 
         uint256 leftOver = fundingRaised - fundingTarget;
         
