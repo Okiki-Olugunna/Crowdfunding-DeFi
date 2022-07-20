@@ -10,9 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 // Chainlink V3 Interface for data feed 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-//aave V3 pool contract 
-import "@aave/core-v3/contracts/protocol/pool/Pool.sol";
-// aave pool interface 
+// Aave V3 pool interface 
 import "@aave/core-v3/contracts/interfaces/IPool.sol"; 
 // Uniswap V3 contracts for swaps
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
