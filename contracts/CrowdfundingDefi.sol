@@ -141,7 +141,7 @@ contract CrowdfundingDefi is Ownable {
     // end of funding round - if funding exceeds target, put extra funds in Aave to reward donators later
     function closeFundingRound() onlyOwner returns (uint256) {
         require(fundingState != FUNDING_STATE.CLOSED, "Funding round is already closed.");
-        require(fundingRoundDeadline <= now, "Time still remains in this funding round.");
+        require(fundingRoundDeadline <= block.timestamp, "Time still remains in this funding round.");
 
         fundingState = FUNDING_STATE.CLOSED;
         if (fundingRaised > fundingTarget) {
