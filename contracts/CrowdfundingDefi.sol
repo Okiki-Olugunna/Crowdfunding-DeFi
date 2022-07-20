@@ -145,7 +145,7 @@ contract CrowdfundingDefi is Ownable {
 
         fundingState = FUNDING_STATE.CLOSED;
         if (fundingRaised > fundingTarget) {
-            _yieldFarm();
+            _yieldFarm(address(WETH));
             endOfYieldPeriod = block.timestamp + 180 days;
         }
 
