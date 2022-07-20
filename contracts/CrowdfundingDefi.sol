@@ -11,12 +11,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // Chainlink V3 Interface for data feed 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 //aave V3 pool contract 
-import "@aave/aave-v3-core/contracts/protocol/pool/Pool.sol";
+import "@aave/core-v3/contracts/protocol/pool/Pool.sol";
 // aave pool interface 
-import "@aave/aave-v3-core/contracts/interfaces/IPool.sol"; 
+import "@aave/core-v3/contracts/interfaces/IPool.sol"; 
 // Uniswap V3 contracts for swaps
-import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
-import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 
 contract CrowdfundingDefi is Ownable {
@@ -65,7 +65,7 @@ contract CrowdfundingDefi is Ownable {
     uint256 giveBackToEachDonor;
 
     // eth price feed from chainlink 
-    AggregatorV3Interface public ethUSDPricefeed;
+    AggregatorV3Interface public ethUSDPriceFeed;
     // variable for the minimum funding amount - 10 usd
     uint256 public constant minimumAmount = 10 * 1e18;
 
@@ -293,7 +293,7 @@ contract CrowdfundingDefi is Ownable {
 
     // function to get the price of the ETH
     function getPrice() public view returns (uint256) {
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = ethUSDPriceFeed.latestRoundData();
         // converting to wei
         return uint256(price * 1e10);
     }
