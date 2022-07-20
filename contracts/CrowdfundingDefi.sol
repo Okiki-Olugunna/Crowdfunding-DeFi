@@ -190,14 +190,14 @@ contract CrowdfundingDefi is Ownable {
         
         // convert the WETH to USDT using Uniswap V3 router:
         // approving uniswap v3 to spend the tokens 
-        TransferHelper.safeApprove(WETH, address(swapRouter), leftOver);
+        TransferHelper.safeApprove(address(WETH), address(swapRouter), leftOver);
         // transferring the left over to uniswap v3
-        TransferHelper.safeTransferFrom(WETH, address(this), address(swapRouter), leftOver);
+        TransferHelper.safeTransferFrom(address(WETH), address(this), address(swapRouter), leftOver);
         // swap to usdt 
         ISwapRouter.ExactInputSingleParams memory params =
             ISwapRouter.ExactInputSingleParams({
-                tokenIn: WETH,
-                tokenOut: USDT,
+                tokenIn: address(WETH),
+                tokenOut: address(USDT),
                 fee: poolFee,
                 recipient: address(this),
                 deadline: block.timestamp,
@@ -215,7 +215,7 @@ contract CrowdfundingDefi is Ownable {
         // deposit USDT in Aave
         // approve, transferFrom, supply 
         USDT.approve(address(aaveV3Pool), swappedUSDT);
-        USDT.transferFrom(address(this), aaveV3Pool, swappedUSDT);
+        USDT.transferFrom(address(this), address(aaveV3Pool), swappedUSDT);
         
         // supply the swapped usdt to aave v3
         aaveV3Pool.supply(address(USDT), swappedUSDT, address(this), 0);
@@ -240,14 +240,14 @@ contract CrowdfundingDefi is Ownable {
         
         // swap the usdt back to weth on uniswap v3 
         // approving uniswap v3 to spend the tokens 
-        TransferHelper.safeApprove(USDT, address(swapRouter), yieldedBalance);
+        TransferHelper.safeApprove(address(USDT), address(swapRouter), yieldedBalance);
         // transferring the left over to uniswap v3
-        TransferHelper.safeTransferFrom(USDT, address(this), address(swapRouter), yieldedBalance);
+        TransferHelper.safeTransferFrom(address(USDT), address(this), address(swapRouter), yieldedBalance);
         // swap back to weth 
         ISwapRouter.ExactInputSingleParams memory params =
             ISwapRouter.ExactInputSingleParams({
-                tokenIn: USDT,
-                tokenOut: WETH,
+                tokenIn: address(USDT),
+                tokenOut: address(WETH),
                 fee: poolFee,
                 recipient: address(this),
                 deadline: block.timestamp,
@@ -265,7 +265,7 @@ contract CrowdfundingDefi is Ownable {
     
     
     // internal function called at the end of endYieldFarming 
-    function _rewardsCalculation() internal pure {
+    function _rewardsCalculation() internal {
         uint256 wethHoldings = WETH.balanceOf(address(this));
         // divide the holdings by the number of people who donated 
         giveBackToEachDonor = wethHoldings / allFunders.length;
