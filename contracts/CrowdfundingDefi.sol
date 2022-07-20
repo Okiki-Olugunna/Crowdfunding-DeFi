@@ -115,7 +115,7 @@ contract CrowdfundingDefi is Ownable {
 
     // Series A
     function openSeriesAFunding(uint256 _targetA, uint _fundingRoundDeadline) onlyOwner startFunding {
-        fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
+        fundingRoundDeadline = block.timestamp + (_fundingRoundDeadline * 1 days);
         fundingState = FUNDING_STATE.SERIES_A;
 
         emit fundingRoundStarted();
@@ -123,7 +123,7 @@ contract CrowdfundingDefi is Ownable {
 
     // Series B
     function openSeriesBFunding(uint256 _targetB, uint _fundingRoundDeadline) onlyOwner startFunding {
-        fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
+        fundingRoundDeadline = block.timestamp + (_fundingRoundDeadline * 1 days);
         fundingState = FUNDING_STATE.SERIES_B;
 
         emit fundingRoundStarted();
@@ -131,7 +131,7 @@ contract CrowdfundingDefi is Ownable {
 
     // Series C
     function openSeriesCFunding(uint256 _targetC, uint _fundingRoundDeadline) onlyOwner startFunding {
-        fundingRoundDeadline = block.timestamp + _fundingRoundDeadline days;
+        fundingRoundDeadline = block.timestamp + (_fundingRoundDeadline * 1 days);
         fundingState = FUNDING_STATE.SERIES_C;
 
         emit fundingRoundStarted();
