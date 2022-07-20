@@ -22,7 +22,7 @@ contract CrowdfundingDefi is Ownable {
     // Uniswap V3 Swap Router
     ISwapRouter public immutable swapRouter;
     // Aave V3 Polygon mainnet address
-    Pool aaveV3Pool = Pool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
+    IPool aaveV3Pool = IPool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
     // Aave V3 Polygon testnest (mumbai) address - 0x1758d4e6f68166C4B2d9d0F049F33dEB399Daa1F;
     
     // WETH contract address on polygon 
