@@ -1,4 +1,4 @@
-### Crowdfunding DeFi Project 
+## Crowdfunding DeFi Project 
 
 - Any entity raising funds has 3 funding rounds to reach their target funding; Series A, Series B, Series C
 - Donors contribute to the cause using WETH  
@@ -6,3 +6,4 @@
 - These supplied funds will be kept on Aave V3 for a minimum of 180 days 
 - After 180 days have passed, the owners of the crowdfund can call endYieldFarming - this will withdraw the USDT from Aave, then swap it back to WETH using Uniswap 
 - Once the owners have ended the yielding & the funds have been swapped, those who donated to the crowdfund can redeem their gift by calling the claimRewards function  
+
