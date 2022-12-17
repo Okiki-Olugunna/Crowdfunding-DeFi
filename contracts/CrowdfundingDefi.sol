@@ -234,6 +234,11 @@ contract CrowdfundingDefi is Ownable {
 
     // withdraw function - for owner of fundraiser to withdraw the WETH
     function withdraw(uint256 _amount) external onlyOwner {
+        require(
+            fundingState == FUNDING_STATE.CLOSED,
+            "Cannot withdraw funds in the middle of a funding round!"
+        );
+
         WETH.transferFrom(address(this), msg.sender, _amount);
     }
 
