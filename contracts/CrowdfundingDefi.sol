@@ -22,6 +22,10 @@ import "../interfaces/ISwapRouter.sol";
 // import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "./libraries/TransferHelper.sol";
 
+// ERC721 interface 
+import "../interfaces/IERC721.sol";
+
+
 contract CrowdfundingDefi is Ownable {
     // Uniswap V3 Swap Router
     ISwapRouter public immutable swapRouter;
@@ -41,12 +45,12 @@ contract CrowdfundingDefi is Ownable {
     // Matic Aave interest bearing USDT
     IERC20 public constant aUSDT =
         IERC20(0xDAE5F1590db13E3B40423B5b5c5fbf175515910b);
+        
+    // NFT for donors who give >10 WETH
+    IERC721 public rewardNft;
 
     // uniswap pool fee
     uint24 public constant poolFee = 3000;
-
-    // address of the owner of the crowdfund - not needed due to inheriting from Ownable
-    // address public immutable owner;
 
     // keeping track of people who donated so can give them a gift later
     mapping(address => uint256) peopleWhoFunded;
