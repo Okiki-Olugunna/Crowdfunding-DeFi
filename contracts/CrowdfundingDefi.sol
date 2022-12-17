@@ -122,12 +122,14 @@ contract CrowdfundingDefi is Ownable {
     constructor(
         uint256 _fundingTarget,
         address _priceFeedAddress,
-        ISwapRouter _swapRouter
+        ISwapRouter _swapRouter,
+        IERC721 _rewardNft
     ) {
         ethUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         swapRouter = _swapRouter;
         fundingState = FUNDING_STATE.CLOSED;
         fundingTarget = _fundingTarget;
+        rewardNft = _rewardNft;
     }
 
     // Series A
