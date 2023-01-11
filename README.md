@@ -1,4 +1,5 @@
 ## Crowdfunding DeFi Project 
+### (Archived - currently building an improved version with this base concept)
 
 - Any entity raising funds has 3 funding rounds to reach their target funding; Series A, Series B, Series C
 - Donors contribute to the cause using WETH  
