@@ -59,7 +59,7 @@ contract CrowdfundingDefi is Ownable {
     // tracking whether funders have claimed their rewards
     mapping(address => bool) hasClaimedRewards;
 
-    // generous people - those who donate >= 10 ETH
+    // generous people: those who donate >= 10 ETH
     address[] public generousPeople;
     // array of all funders
     address[] public allFunders;
@@ -76,10 +76,10 @@ contract CrowdfundingDefi is Ownable {
 
     // eth price feed from chainlink
     AggregatorV3Interface public ethUSDPriceFeed;
-    // variable for the minimum funding amount - 10 usd
+    // variable for the minimum funding amount: 10 usd
     uint256 public constant minimumAmount = 10 * 1e18;
 
-    // different states and rounds of funding - you have a max. of 3 rounds to reach your funding target
+    // different states and rounds of funding: you have a max. of 3 rounds to reach your funding target
     enum FUNDING_STATE {
         CLOSED,
         SERIES_A,
@@ -201,7 +201,7 @@ contract CrowdfundingDefi is Ownable {
         return fundingRaised;
     }
 
-    // fund function - using WETH - minimum donation of $10 worth
+    // fund function for donors: using WETH - minimum donation required = $10 worth
     function fund(uint256 _amount) external {
         require(
             fundingRoundDeadline >= block.timestamp,
@@ -232,7 +232,7 @@ contract CrowdfundingDefi is Ownable {
         allFunders.push(msg.sender);
     }
 
-    // withdraw function - for owner of fundraiser to withdraw the WETH
+    // withdraw function: for owner of fundraiser to withdraw the WETH
     function withdraw(uint256 _amount) external onlyOwner {
         require(
             fundingState == FUNDING_STATE.CLOSED,
